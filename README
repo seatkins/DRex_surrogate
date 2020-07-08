@@ -1,0 +1,46 @@
+Details for neural networks released to accompany paper:
+
+Neural network surrogate models for the rapid calculation of seismic anisotropy due to crystal preferred orientation, based on the D-Rex program.
+
+Suzanne Atkins and Navid Hedjazian
+suzanne.atkins@ens.psl.eu
+
+Geophysical Research Letters
+******************************************
+
+These neural networks were trained using the Python3 package TensorFlow.  Requirements are Python packages pickle, tensorflow and keras.
+
+This Github repository contains 3 networks: a multi-layer perceptron (MLP), a convolutional neural network which takes fixed length deformation histories (CNN_200) and a CNN that takes varying length deformation histories. Each network contains input and output normalisation parameters and network weights.
+
+Before being presented to the network, the inputs need to be transformed. They are normalised with respect to the training set. Each dimension has a preset mean subtracted and is divided by a standard deviation. These values are included in Lnorm & Cnorm files, details below. The outputs of the network need denormalising but the opposite operation.
+
+
+Basic commands required:
+
+import keras
+import pickle
+# Networks are loaded by:
+Network = tf.keras.models.load_model('network_location')
+# Normalising parameter
+norm = pickle.load(open('array_file.p','rb'))
+
+***************************************************
+
+***Details CNN_200***
+Input: dimension 806, 1:6 input elastic parameters; 7:806 is a 200 step 2D deformation history.
+Output: dimension 6, change to input elastic parameters.
+Input normalisation parameters: Lnorm. Shape is 1612. Indexing: 1:6 are mean of input elastic parameters; 7:806 mean Lij velocity gradient; 807:812 standard deviation of elastic parameters, 813:1612 standard deviation of velocity gradient.
+Output normalisation parameters: Cnorm. Shape is 12. Indexing: 1:6 are mean of output elastic parameters; 7:12 standard deviation of elastic parameters.
+
+***Details CNN_VL***
+Input: dimension 806, 1:6 input elastic parameters; 7:806 is a 200 step 2D deformation history.
+Output: dimension 6, change to input elastic parameters.
+Input normalisation parameters: Lnorm. Shape is 1612. Indexing: 1:6 are mean of input elastic parameters; 7:806 mean Lij velocity gradient; 807:812 standard deviation of elastic parameters, 813:1612 standard deviation of velocity gradient.
+Output normalisation parameters: Cnorm. Shape is 12. Indexing: 1:6 are mean of output elastic parameters; 7:12 standard deviation of elastic parameters.
+Set any unused steps in the deformation history to 0
+
+***Details MLP***
+Input: dimension 10: 1:4 is a single step in a 2D deformation history; 5:10 input initial elastic parameters.
+Output: dimension 6, change to input elastic parameters.
+Input normalisation parameters: Lnorm. Shape is 20. Indexing: 1:4 mean Lij velocity gradient, 5:10 are mean of input elastic parameters; 11:14 standard deviation of velocity gradient; 15:20 standard deviation of elastic parameters.
+Output normalisation parameters: Cnorm. Shape is 12. Indexing: 1:6 are mean of output elastic parameters; 7:12 standard deviation of elastic parameters.
